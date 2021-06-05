@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "947366640589",
+    "project_id": "battery-e8a2d",
+    "storage_bucket": "battery-e8a2d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:947366640589:android:3c0420e58966c5e406e284",
+        "android_client_info": {
+          "package_name": "com.dasunx.battery.battery_manager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "947366640589-6s27fr2q5cqaqu42nh4npvqfi8fhngn7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqsUNS8TFvMn63TWUJzBxJmcgMpZ9VAQI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "947366640589-6s27fr2q5cqaqu42nh4npvqfi8fhngn7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
