@@ -1,8 +1,9 @@
 import 'dart:async';
-
 import 'package:battery/battery.dart';
-import 'package:battery_manager/components/Bubbles.dart';
+import 'package:battery_manager/classes/BatteryNotificationLvl.dart';
 import 'package:battery_manager/constants/constants.dart';
+import 'package:battery_manager/services/notificationService.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -20,14 +21,51 @@ class _BatteryUIState extends State<BatteryUI> {
   BatteryState? _batteryState;
   int? level;
   late StreamSubscription<BatteryState> _batteryStateSubscription;
+  // notifications
+  bool notificationAvailability = false;
+  late int notificationLvl;
+  late String notificationId;
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  TextEditingController lvlController = TextEditingController();
+
+  Future<void> readNotification() async {
+    try {
+      lvlController.text = '';
+
+      // todo: place this in the real battery stream subscription (notificationLvl===streamBatLvl)
+      NotificationService().showNotification(
+          'Battery has reached your custom notification level.');
+
+      var response = await firestore
+          .collection('notifications')
+          .where('userId', isEqualTo: 'companyDummy4')
+          .get();
+
+      if (response.docs.isNotEmpty) {
+        notificationAvailability = true;
+
+        var notification =
+            BatteryNotificationLvl.fromJson(response.docs.first.data());
+
+        setState(() {
+          notificationLvl = notification.lvl;
+        });
+
+        print(notification.lvl);
+        notificationId = response.docs.first.id;
+      }
+    } catch (err) {
+      print(err);
+      throw err;
+    }
+  }
 
   @override
-  void initState() {
+  initState() {
+    readNotification();
+
     _batteryStateSubscription =
         _battery.onBatteryStateChanged.listen((BatteryState state) {
-      // todo firebase registration login - Thanura
-      // todo notification - notify level input - Kamal
-      // todo add latest level to firebase history - Ashen
       if (state == BatteryState.charging) {
         print(state);
         setState(() {
@@ -62,19 +100,104 @@ class _BatteryUIState extends State<BatteryUI> {
 
   @override
   Widget build(BuildContext context) {
+    CollectionReference notifications = firestore.collection('notifications');
+
+    Future<void> addNotification() {
+      return notifications
+          .add({
+            'lvl': int.parse(lvlController.text),
+            'userId': 'companyDummy4',
+          })
+          .then((value) => readNotification())
+          .catchError((error) => print("Failed to add notifier: $error"));
+    }
+
+    Future<void> updateNotification() {
+      print('update btn pressed');
+      return notifications
+          .doc(notificationId)
+          .update({'lvl': int.parse(lvlController.text)})
+          .then((value) => readNotification())
+          .catchError((error) => print("Failed to add notifier: $error"));
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Battery Manager'),
       ),
       body: Container(
+        padding: EdgeInsets.all(10.0),
         width: MediaQuery.of(context).size.width,
         color: primary_bg_color,
         child: Column(
           children: <Widget>[
             Expanded(
-              flex: 2,
-              child: Text("When do you need to get notify"),
-            ),
+                flex: 2,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          notificationAvailability
+                              ? "Update your notification level"
+                              : "Please set the notification level",
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Column(
+                          children: [
+                            notificationAvailability
+                                ? RichText(
+                                    text: TextSpan(
+                                      children: <TextSpan>[
+                                        TextSpan(text: 'Current: '),
+                                        TextSpan(
+                                            text: notificationLvl.toString(),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.purpleAccent)),
+                                      ],
+                                    ),
+                                  )
+                                : SizedBox()
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            SizedBox(
+                                width: MediaQuery.of(context).size.width / 4,
+                                child: TextField(
+                                  controller: lvlController,
+                                  keyboardType: TextInputType.number,
+                                )),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            SizedBox(
+                                width: MediaQuery.of(context).size.width / 4,
+                                child: TextButton(
+                                  onPressed: lvlController.text.isEmpty
+                                      ? null
+                                      : notificationAvailability
+                                          ? () => updateNotification()
+                                          : () => addNotification(),
+                                  child: Text(notificationAvailability
+                                      ? 'Update'
+                                      : 'Add'),
+                                )),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                )),
             Expanded(
               flex: 8,
               child: Column(
