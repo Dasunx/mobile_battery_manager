@@ -121,135 +121,141 @@ class _BatteryUIState extends State<BatteryUI> {
           .catchError((error) => print("Failed to add notifier: $error"));
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Battery Manager'),
-      ),
-      body: Container(
-        padding: EdgeInsets.all(10.0),
-        width: MediaQuery.of(context).size.width,
-        color: primary_bg_color,
-        child: Column(
-          children: <Widget>[
-            Expanded(
-                flex: 2,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          notificationAvailability
-                              ? "Update your notification level"
-                              : "Please set the notification level",
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Column(
-                          children: [
-                            notificationAvailability
-                                ? RichText(
-                                    text: TextSpan(
-                                      children: <TextSpan>[
-                                        TextSpan(text: 'Current: '),
-                                        TextSpan(
-                                            text: notificationLvl.toString(),
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.purpleAccent)),
-                                      ],
-                                    ),
-                                  )
-                                : SizedBox()
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            SizedBox(
-                                width: MediaQuery.of(context).size.width / 4,
-                                child: TextField(
-                                  controller: lvlController,
-                                  keyboardType: TextInputType.number,
-                                )),
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            SizedBox(
-                                width: MediaQuery.of(context).size.width / 4,
-                                child: TextButton(
-                                  onPressed: lvlController.text.isEmpty
-                                      ? null
-                                      : notificationAvailability
-                                          ? () => updateNotification()
-                                          : () => addNotification(),
-                                  child: Text(notificationAvailability
-                                      ? 'Update'
-                                      : 'Add'),
-                                )),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                )),
-            Expanded(
-              flex: 8,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 50,
-                    height: 15,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(8),
-                        topRight: Radius.circular(8),
-                      ),
-                      border: Border.all(color: Colors.white),
-                    ),
-                  ),
-                  Container(
-                    width: 180,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.white),
-                    ),
-                    child: AnimatedContainer(
-                      height: 300,
-                      duration: Duration(seconds: 1),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        gradient: getGradient("status", 20),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          title: Text('Battery Manager'),
+        ),
+        body: Container(
+          padding: EdgeInsets.all(10.0),
+          width: MediaQuery.of(context).size.width,
+          color: primary_bg_color,
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                  flex: 2,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Row(
                         children: [
                           Text(
-                            "97%",
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            notificationAvailability
+                                ? "Update your notification level"
+                                : "Please set the notification level",
+                            style: TextStyle(fontSize: 16),
                           ),
-                          Text("Charging"),
                         ],
                       ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Column(
+                            children: [
+                              notificationAvailability
+                                  ? RichText(
+                                      text: TextSpan(
+                                        children: <TextSpan>[
+                                          TextSpan(text: 'Current: '),
+                                          TextSpan(
+                                              text: notificationLvl.toString(),
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.purpleAccent)),
+                                        ],
+                                      ),
+                                    )
+                                  : SizedBox()
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              SizedBox(
+                                  width: MediaQuery.of(context).size.width / 4,
+                                  child: TextField(
+                                    controller: lvlController,
+                                    keyboardType: TextInputType.number,
+                                  )),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              SizedBox(
+                                  width: MediaQuery.of(context).size.width / 4,
+                                  child: TextButton(
+                                    onPressed: lvlController.text.isEmpty
+                                        ? null
+                                        : notificationAvailability
+                                            ? () => updateNotification()
+                                            : () => addNotification(),
+                                    child: Text(notificationAvailability
+                                        ? 'Update'
+                                        : 'Add'),
+                                  )),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  )),
+              Expanded(
+                flex: 8,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 50,
+                      height: 15,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(8),
+                          topRight: Radius.circular(8),
+                        ),
+                        border: Border.all(color: Colors.white),
+                      ),
                     ),
-                  ),
-                ],
+                    Container(
+                      width: 180,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.white),
+                      ),
+                      child: AnimatedContainer(
+                        height: 300,
+                        duration: Duration(seconds: 1),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          gradient: getGradient("status", 20),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "97%",
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text("Charging"),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Expanded(
-              flex: 4,
-              child: Text("History"),
-            ),
-          ],
+              Expanded(
+                flex: 4,
+                child: Text("History"),
+              ),
+            ],
+          ),
         ),
       ),
     );
