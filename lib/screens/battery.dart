@@ -16,11 +16,12 @@ class BatteryUI extends StatefulWidget {
 
 class _BatteryUIState extends State<BatteryUI> {
   int _counter = 0;
-  bool show = false;
+  bool batteryCharging = true;
   final Battery _battery = Battery();
   BatteryState? _batteryState;
-  int? level;
+  int level = 0;
   late StreamSubscription<BatteryState> _batteryStateSubscription;
+
   // notifications
   bool notificationAvailability = false;
   late int notificationLvl;
@@ -67,16 +68,22 @@ class _BatteryUIState extends State<BatteryUI> {
     _batteryStateSubscription =
         _battery.onBatteryStateChanged.listen((BatteryState state) {
       if (state == BatteryState.charging) {
-        print(state);
+        if (batteryCharging == false) {
+          // methanin batteryCharging kiyana eka false kiyanne me aluth state ekata kalin charge ekata gahala nathuwa thibila thiyanne
+          // E kiyanne dan me charge ekata gahuwa gaman listner eken update eka awe. Me welawe thiyana chargelevel eke level kiyana variable eken ganna puluwan
+          // eka aran date ekayi username ekayi ekka history ekata danna. 
+          print("update previously charged level here ${level}");
+        }
         setState(() {
-          show = true;
+          batteryCharging = true;
         });
       } else {
         setState(() {
-          show = false;
+          batteryCharging = false;
         });
       }
       getLevel();
+
       setState(() {
         _batteryState = state;
       });
@@ -230,19 +237,19 @@ class _BatteryUIState extends State<BatteryUI> {
                         duration: Duration(seconds: 1),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
-                          gradient: getGradient("status", 20),
+                          gradient: getGradient(level),
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "97%",
+                              "${level}%",
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Text("Charging"),
+                            Text(batteryCharging ? "Charging" : "Discharging"),
                           ],
                         ),
                       ),
