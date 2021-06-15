@@ -3,22 +3,21 @@ import 'package:battery_manager/constants/loading.dart';
 import 'package:battery_manager/services/auth.dart';
 import 'package:flutter/material.dart';
 
-class SignIn extends StatefulWidget {
-  //const SignIn({Key? key}) : super(key: key);
+class Register extends StatefulWidget {
+  //const Register({Key? key}) : super(key: key);
 
   final Function toggleView;
-  SignIn({required this.toggleView});
+  Register({required this.toggleView});
 
   @override
-  _SignInState createState() => _SignInState();
+  _RegisterState createState() => _RegisterState();
 }
 
-class _SignInState extends State<SignIn> {
+class _RegisterState extends State<Register> {
   final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   bool loading = false;
 
-  //text field state
   String email = '';
   String password = '';
   String error = '';
@@ -32,14 +31,14 @@ class _SignInState extends State<SignIn> {
             appBar: AppBar(
               backgroundColor: secondary_bg_color,
               elevation: 0.0,
-              title: Text('Sign in'),
+              title: Text('Register'),
               actions: <Widget>[
                 ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
                       primary: secondary_bg_color,
                     ),
                     icon: Icon(Icons.person),
-                    label: Text('Register'),
+                    label: Text('Sign in'),
                     onPressed: () {
                       widget.toggleView();
                     })
@@ -62,32 +61,29 @@ class _SignInState extends State<SignIn> {
                       SizedBox(height: 20.0),
                       TextFormField(
                         decoration: formFields.copyWith(hintText: 'Password'),
+                        obscureText: true,
                         validator: (val) => val!.length < 4
                             ? 'Password must be 4 characters or more'
                             : null,
-                        obscureText: true,
                         onChanged: (val) {
                           setState(() => password = val);
                         },
                       ),
                       SizedBox(height: 20.0),
                       ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.blueAccent,
-                          ),
                           child: Text(
-                            'Sign in',
+                            'Register',
                             style: TextStyle(color: Colors.white),
                           ),
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
                               setState(() => loading = true);
-                              dynamic result = await _auth
-                                  .signInWithEmailAndPassword(email, password);
+                              dynamic result =
+                                  await _auth.registerWithEmailAndPassword(
+                                      email, password);
                               if (result == null) {
                                 setState(() {
-                                  error =
-                                      'Log in failed! check your credentials';
+                                  error = 'Please enter valid credentials';
                                   loading = false;
                                 });
                               }

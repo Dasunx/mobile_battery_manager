@@ -1,7 +1,9 @@
 import 'dart:async';
+
 import 'package:battery/battery.dart';
 import 'package:battery_manager/classes/BatteryNotificationLvl.dart';
 import 'package:battery_manager/constants/constants.dart';
+import 'package:battery_manager/services/auth.dart';
 import 'package:battery_manager/services/notificationService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,6 +15,8 @@ class BatteryUI extends StatefulWidget {
   @override
   _BatteryUIState createState() => _BatteryUIState();
 }
+
+final AuthService _auth = AuthService();
 
 class _BatteryUIState extends State<BatteryUI> {
   int _counter = 0;
@@ -124,6 +128,19 @@ class _BatteryUIState extends State<BatteryUI> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Battery Manager'),
+        elevation: 0.0,
+        actions: <Widget>[
+          ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              primary: Colors.black12,
+            ),
+            icon: Icon(Icons.person),
+            label: Text('Logout'),
+            onPressed: () async {
+              await _auth.signOut();
+            },
+          )
+        ],
       ),
       body: Container(
         padding: EdgeInsets.all(10.0),
