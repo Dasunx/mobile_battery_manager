@@ -1,9 +1,12 @@
 import 'dart:async';
+
 import 'package:battery/battery.dart';
 import 'package:battery_manager/classes/BatteryNotificationLvl.dart';
 import 'package:battery_manager/constants/constants.dart';
+import 'package:battery_manager/services/auth.dart';
 import 'package:battery_manager/services/notificationService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:battery_manager/screens/history.dart';
@@ -15,12 +18,14 @@ class BatteryUI extends StatefulWidget {
   _BatteryUIState createState() => _BatteryUIState();
 }
 
+final AuthService _auth = AuthService();
+
 class _BatteryUIState extends State<BatteryUI> {
   int _counter = 0;
-  bool show = false;
+  bool batteryCharging = true;
   final Battery _battery = Battery();
   BatteryState? _batteryState;
-  int? level;
+  int level = 0;
   late StreamSubscription<BatteryState> _batteryStateSubscription;
 
   // notifications
@@ -28,6 +33,9 @@ class _BatteryUIState extends State<BatteryUI> {
   late int notificationLvl;
   late String notificationId;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  late User user;
+  late String uid;
   TextEditingController lvlController = TextEditingController();
 
   Future<void> readNotification() async {
@@ -40,7 +48,7 @@ class _BatteryUIState extends State<BatteryUI> {
 
       var response = await firestore
           .collection('notifications')
-          .where('userId', isEqualTo: 'companyDummy4')
+          .where('userId', isEqualTo: uid)
           .get();
 
       if (response.docs.isNotEmpty) {
@@ -64,21 +72,29 @@ class _BatteryUIState extends State<BatteryUI> {
 
   @override
   initState() {
+    user = auth.currentUser!;
+    uid = user.uid;
     readNotification();
 
     _batteryStateSubscription =
         _battery.onBatteryStateChanged.listen((BatteryState state) {
       if (state == BatteryState.charging) {
-        print(state);
+        if (batteryCharging == false) {
+          // methanin batteryCharging kiyana eka false kiyanne me aluth state ekata kalin charge ekata gahala nathuwa thibila thiyanne
+          // E kiyanne dan me charge ekata gahuwa gaman listner eken update eka awe. Me welawe thiyana chargelevel eke level kiyana variable eken ganna puluwan
+          // eka aran date ekayi username ekayi ekka history ekata danna.
+          print("update previously charged level here ${level}");
+        }
         setState(() {
-          show = true;
+          batteryCharging = true;
         });
       } else {
         setState(() {
-          show = false;
+          batteryCharging = false;
         });
       }
       getLevel();
+
       setState(() {
         _batteryState = state;
       });
@@ -106,10 +122,11 @@ class _BatteryUIState extends State<BatteryUI> {
     CollectionReference notifications = firestore.collection('notifications');
 
     Future<void> addNotification() {
+      print('add btn has pressed');
       return notifications
           .add({
             'lvl': int.parse(lvlController.text),
-            'userId': 'companyDummy4',
+            'userId': uid,
           })
           .then((value) => readNotification())
           .catchError((error) => print("Failed to add notifier: $error"));
@@ -233,19 +250,19 @@ class _BatteryUIState extends State<BatteryUI> {
                         duration: Duration(seconds: 1),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
-                          gradient: getGradient("status", 20),
+                          gradient: getGradient(level),
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "97%",
+                              "${level}%",
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Text("Charging"),
+                            Text(batteryCharging ? "Charging" : "Discharging"),
                           ],
                         ),
                       ),
