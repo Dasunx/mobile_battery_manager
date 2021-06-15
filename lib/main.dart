@@ -1,4 +1,4 @@
-import 'package:battery_manager/screens/battery.dart';
+import 'package:battery_manager/screens/wrapper.dart';
 import 'package:battery_manager/services/notificationService.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,8 +8,12 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 final FlutterLocalNotificationsPlugin notificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
+var initializationSettingsAndroid =
+    new AndroidInitializationSettings('app_icon');
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   await NotificationService().init();
   runApp(MyApp());
 }
@@ -70,7 +74,7 @@ class _MyAppState extends State<MyApp> {
         brightness: Brightness.dark,
         primarySwatch: Colors.blue,
       ),
-      home: BatteryUI(),
+      home: Wrapper(),
     );
   }
 }
