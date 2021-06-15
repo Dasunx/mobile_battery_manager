@@ -25,7 +25,7 @@ class _BatteryUIState extends State<BatteryUI> {
   bool batteryCharging = true;
   final Battery _battery = Battery();
   BatteryState? _batteryState;
-  int level = 0;
+  int level = 45;
   late StreamSubscription<BatteryState> _batteryStateSubscription;
 
   // notifications
@@ -41,10 +41,6 @@ class _BatteryUIState extends State<BatteryUI> {
   Future<void> readNotification() async {
     try {
       lvlController.text = '';
-
-      // todo: place this in the real battery stream subscription (notificationLvl===streamBatLvl)
-      NotificationService().showNotification(
-          'Battery has reached your custom notification level.');
 
       var response = await firestore
           .collection('notifications')
@@ -78,6 +74,7 @@ class _BatteryUIState extends State<BatteryUI> {
 
     _batteryStateSubscription =
         _battery.onBatteryStateChanged.listen((BatteryState state) {
+      print('listening to the battery stream');
       if (state == BatteryState.charging) {
         if (batteryCharging == false) {
           // methanin batteryCharging kiyana eka false kiyanne me aluth state ekata kalin charge ekata gahala nathuwa thibila thiyanne
@@ -98,6 +95,11 @@ class _BatteryUIState extends State<BatteryUI> {
       setState(() {
         _batteryState = state;
       });
+
+      if (notificationLvl == level) {
+        NotificationService().showNotification(
+            'Battery has reached your custom notification level.');
+      }
     });
     super.initState();
   }
