@@ -9,6 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:battery_manager/screens/history.dart';
 
 class BatteryUI extends StatefulWidget {
   const BatteryUI({Key? key}) : super(key: key);
@@ -108,6 +109,7 @@ class _BatteryUIState extends State<BatteryUI> {
   }
 
   int batterylevel = 0;
+
   void getLevel() async {
     var l = await _battery.batteryLevel;
     setState(() {
@@ -268,9 +270,24 @@ class _BatteryUIState extends State<BatteryUI> {
                   ],
                 ),
               ),
-              Expanded(
-                flex: 4,
-                child: Text("History"),
+              ElevatedButton(
+                child: Text('View History'),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return History();
+                      },
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.deepPurple,
+                  padding: EdgeInsets.symmetric(horizontal: 70, vertical: 20),
+                  textStyle:
+                      TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
               ),
             ],
           ),
