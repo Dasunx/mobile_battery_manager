@@ -18,6 +18,15 @@ LinearGradient getGradient(charge) {
   return bg_gradient;
 }
 
+
+const formFields = InputDecoration(
+    enabledBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: secondary_green, width: 2.0),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.redAccent, width: 2.0),
+    ));
+
 Alignment getEndAlignment(charge) {
   double start = -1;
   double end = 0;
@@ -73,3 +82,4 @@ List<Color> getColors(charge) {
   }
   
 }
+

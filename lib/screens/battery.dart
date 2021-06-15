@@ -1,7 +1,9 @@
 import 'dart:async';
+
 import 'package:battery/battery.dart';
 import 'package:battery_manager/classes/BatteryNotificationLvl.dart';
 import 'package:battery_manager/constants/constants.dart';
+import 'package:battery_manager/services/auth.dart';
 import 'package:battery_manager/services/notificationService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,6 +15,8 @@ class BatteryUI extends StatefulWidget {
   @override
   _BatteryUIState createState() => _BatteryUIState();
 }
+
+final AuthService _auth = AuthService();
 
 class _BatteryUIState extends State<BatteryUI> {
   int _counter = 0;
@@ -128,6 +132,7 @@ class _BatteryUIState extends State<BatteryUI> {
           .catchError((error) => print("Failed to add notifier: $error"));
     }
 
+
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -212,6 +217,7 @@ class _BatteryUIState extends State<BatteryUI> {
                   )),
               Expanded(
                 flex: 8,
+
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
