@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:battery/battery.dart';
 import 'package:battery_manager/classes/BatteryNotificationLvl.dart';
 import 'package:battery_manager/constants/constants.dart';
+import 'package:battery_manager/screens/history.dart';
 import 'package:battery_manager/services/auth.dart';
 import 'package:battery_manager/services/notificationService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:battery_manager/screens/history.dart';
 
 class BatteryUI extends StatefulWidget {
   const BatteryUI({Key? key}) : super(key: key);
@@ -151,6 +151,18 @@ class _BatteryUIState extends State<BatteryUI> {
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
           title: Text('Battery Manager'),
+          actions: <Widget>[
+            ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  primary: primary_bg_color,
+                ),
+                icon: Icon(Icons.logout),
+                label: Text('logout'),
+                onPressed: () {
+                  _auth.signOut();
+                  //widget.toggleView();
+                })
+          ],
         ),
         body: Container(
           padding: EdgeInsets.all(10.0),

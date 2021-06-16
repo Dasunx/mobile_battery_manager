@@ -47,7 +47,7 @@ class _RegisterState extends State<Register> {
             ),
             body: Column(children: <Widget>[
               Container(
-                height: 165,
+                height: 200,
                 child: Stack(
                   children: <Widget>[
                     Positioned(
@@ -61,7 +61,7 @@ class _RegisterState extends State<Register> {
                 ),
               ),
               SizedBox(
-                height: 5.0,
+                height: 1.0,
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.0),
@@ -69,15 +69,15 @@ class _RegisterState extends State<Register> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        "Hello, \nWelcome!",
+                        "Hello, \nWelcome !",
                         style: TextStyle(
-                          fontSize: 30,
+                          fontSize: 35,
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       SizedBox(
-                        height: 10.0,
+                        height: 1.0,
                       ),
                       Container(
                           padding: EdgeInsets.symmetric(
@@ -96,7 +96,7 @@ class _RegisterState extends State<Register> {
                                     setState(() => email = val);
                                   },
                                 ),
-                                SizedBox(height: 20.0),
+                                SizedBox(height: 10.0),
                                 TextFormField(
                                   decoration:
                                       formFields.copyWith(hintText: 'Password'),
@@ -112,6 +112,8 @@ class _RegisterState extends State<Register> {
                                 ElevatedButton(
                                     style: ElevatedButton.styleFrom(
                                       primary: secondary_bg_color,
+                                      side: BorderSide(
+                                          width: 1.0, color: secondary_green),
                                       padding: EdgeInsets.symmetric(
                                           horizontal: 40, vertical: 15),
                                     ),

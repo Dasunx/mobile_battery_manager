@@ -49,7 +49,7 @@ class _SignInState extends State<SignIn> {
             body: Column(
               children: <Widget>[
                 Container(
-                  height: 165,
+                  height: 200,
                   child: Stack(
                     children: <Widget>[
                       Positioned(
@@ -63,7 +63,7 @@ class _SignInState extends State<SignIn> {
                   ),
                 ),
                 SizedBox(
-                  height: 5.0,
+                  height: 1.0,
                 ),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20.0),
@@ -71,15 +71,15 @@ class _SignInState extends State<SignIn> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          "Hello, \nWelcome Back",
+                          "Hello, \nWelcome Back !",
                           style: TextStyle(
-                            fontSize: 30,
+                            fontSize: 35,
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         SizedBox(
-                          height: 10.0,
+                          height: 1.0,
                         ),
                         Container(
                             padding: EdgeInsets.symmetric(
@@ -88,7 +88,7 @@ class _SignInState extends State<SignIn> {
                               key: _formKey,
                               child: Column(
                                 children: <Widget>[
-                                  SizedBox(height: 20.0),
+                                  SizedBox(height: 10.0),
                                   TextFormField(
                                     decoration:
                                         formFields.copyWith(hintText: 'Email'),
@@ -98,7 +98,7 @@ class _SignInState extends State<SignIn> {
                                       setState(() => email = val);
                                     },
                                   ),
-                                  SizedBox(height: 20.0),
+                                  SizedBox(height: 10.0),
                                   TextFormField(
                                     decoration: formFields.copyWith(
                                         hintText: 'Password'),
