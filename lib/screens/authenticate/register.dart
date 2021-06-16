@@ -27,7 +27,8 @@ class _RegisterState extends State<Register> {
     return loading
         ? Loading()
         : Scaffold(
-            backgroundColor: primary_bg_color,
+            resizeToAvoidBottomInset: false,
+            backgroundColor: secondary_bg_color,
             appBar: AppBar(
               backgroundColor: secondary_bg_color,
               elevation: 0.0,
@@ -44,60 +45,109 @@ class _RegisterState extends State<Register> {
                     })
               ],
             ),
-            body: Container(
-                padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
+            body: Column(children: <Widget>[
+              Container(
+                height: 200,
+                child: Stack(
+                  children: <Widget>[
+                    Positioned(
+                        child: Container(
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: AssetImage("assets/images/login.png"))),
+                    ))
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 1.0,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      SizedBox(height: 20.0),
-                      TextFormField(
-                        decoration: formFields.copyWith(hintText: 'Email'),
-                        validator: (val) => val!.isEmpty ? 'Enter email' : null,
-                        onChanged: (val) {
-                          setState(() => email = val);
-                        },
-                      ),
-                      SizedBox(height: 20.0),
-                      TextFormField(
-                        decoration: formFields.copyWith(hintText: 'Password'),
-                        obscureText: true,
-                        validator: (val) => val!.length < 4
-                            ? 'Password must be 4 characters or more'
-                            : null,
-                        onChanged: (val) {
-                          setState(() => password = val);
-                        },
-                      ),
-                      SizedBox(height: 20.0),
-                      ElevatedButton(
-                          child: Text(
-                            'Register',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          onPressed: () async {
-                            if (_formKey.currentState!.validate()) {
-                              setState(() => loading = true);
-                              dynamic result =
-                                  await _auth.registerWithEmailAndPassword(
-                                      email, password);
-                              if (result == null) {
-                                setState(() {
-                                  error = 'Please enter valid credentials';
-                                  loading = false;
-                                });
-                              }
-                            }
-                          }),
-                      SizedBox(height: 12.0),
                       Text(
-                        error,
-                        style:
-                            TextStyle(color: Colors.redAccent, fontSize: 14.0),
-                      )
-                    ],
-                  ),
-                )),
+                        "Hello, \nWelcome !",
+                        style: TextStyle(
+                          fontSize: 35,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 1.0,
+                      ),
+                      Container(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 20.0, horizontal: 30.0),
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              children: <Widget>[
+                                SizedBox(height: 20.0),
+                                TextFormField(
+                                  decoration:
+                                      formFields.copyWith(hintText: 'Email'),
+                                  validator: (val) =>
+                                      val!.isEmpty ? 'Enter email' : null,
+                                  onChanged: (val) {
+                                    setState(() => email = val);
+                                  },
+                                ),
+                                SizedBox(height: 10.0),
+                                TextFormField(
+                                  decoration:
+                                      formFields.copyWith(hintText: 'Password'),
+                                  obscureText: true,
+                                  validator: (val) => val!.length < 4
+                                      ? 'Password must be 4 characters or more'
+                                      : null,
+                                  onChanged: (val) {
+                                    setState(() => password = val);
+                                  },
+                                ),
+                                SizedBox(height: 20.0),
+                                ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      primary: secondary_bg_color,
+                                      side: BorderSide(
+                                          width: 1.0, color: secondary_green),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 40, vertical: 15),
+                                    ),
+                                    child: Text(
+                                      'Register',
+                                      style: TextStyle(color: secondary_green),
+                                    ),
+                                    onPressed: () async {
+                                      if (_formKey.currentState!.validate()) {
+                                        setState(() => loading = true);
+                                        dynamic result = await _auth
+                                            .registerWithEmailAndPassword(
+                                                email, password);
+                                        if (result == null) {
+                                          setState(() {
+                                            error =
+                                                'Please enter valid credentials';
+                                            loading = false;
+                                          });
+                                        }
+                                      }
+                                    }),
+                                SizedBox(height: 12.0),
+                                Text(
+                                  error,
+                                  style: TextStyle(
+                                      color: Colors.redAccent, fontSize: 14.0),
+                                )
+                              ],
+                            ),
+                          )),
+                    ]),
+              ),
+            ]),
           );
   }
 }
