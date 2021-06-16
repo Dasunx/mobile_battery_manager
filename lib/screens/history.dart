@@ -1,6 +1,5 @@
-import 'dart:async';
-import 'package:battery/battery.dart';
-import 'package:battery_manager/classes/ChargingStatus.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -12,40 +11,27 @@ class History extends StatefulWidget {
 }
 
 class _HistoryState extends State<History> {
-  final battery = Battery();
-  int batteryLevel = 100;
-
-  late Timer timer;
-  late StreamSubscription subscription;
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  late User currentUser;
+  late final String documentId;
+  late final String uid;
+  late final int percentage;
+  final DateTime currentDate = DateTime.now();
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  late final Stream<QuerySnapshot> _historyStream;
 
   @override
   void initState() {
+    // TODO: implement initState
+    currentUser = auth.currentUser!;
+    uid = currentUser.uid;
+    DateTime currentDate = DateTime.now();
+    _historyStream = FirebaseFirestore.instance
+        .collection('history')
+        .where("userId", isEqualTo: uid)
+        //.where("date", isGreaterThanOrEqualTo: 1622961000)
+        .snapshots();
     super.initState();
-
-    listenBatteryLevel();
-  }
-
-  void listenBatteryLevel() {
-    updateBatteryLevel();
-
-    timer = Timer.periodic(
-      Duration(seconds: 10),
-      (_) async => updateBatteryLevel(),
-    );
-  }
-
-  Future updateBatteryLevel() async {
-    final batteryLevel = await battery.batteryLevel;
-
-    setState(() => this.batteryLevel = batteryLevel);
-  }
-
-  @override
-  void dispose() {
-    timer.cancel();
-    subscription.cancel();
-
-    super.dispose();
   }
 
   @override
@@ -62,7 +48,7 @@ class _HistoryState extends State<History> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
-                'Current Battery Level: ' + '$batteryLevel%',
+                'Your Charging History',
                 style: TextStyle(
                   fontSize: 30,
                   color: Colors.white,
@@ -70,253 +56,73 @@ class _HistoryState extends State<History> {
                 ),
               ),
               SizedBox(height: 50),
-              Table(
-                border: TableBorder.all(
-                  width: 2.0,
-                  color: Colors.pink,
-                  style: BorderStyle.solid,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  TableRow(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "Day",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.w900,
-                              color: Colors.deepOrange),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("Battery Level",
-                            textAlign: TextAlign.center,
-                            //trim the axis value to 2 digit after decimal point
-                            style: TextStyle(
-                                fontSize: 20.0,
-                                fontWeight: FontWeight.w900,
-                                color: Colors.deepOrange)),
-                      )
-                    ],
+                  Text(
+                    'Day',
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                      fontSize: 30,
+                      color: Colors.lightGreen,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  TableRow(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "Day 10",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 20.0),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("Percentage",
-                            textAlign: TextAlign.center,
-                            //trim the axis value to 2 digit after decimal point
-                            style: TextStyle(fontSize: 20.0)),
-                      )
-                    ],
-                  ),
-                  TableRow(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "Day 9",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 20.0),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("Percentage",
-                            textAlign: TextAlign.center,
-                            //trim the axis value to 2 digit after decimal point
-                            style: TextStyle(fontSize: 20.0)),
-                      )
-                    ],
-                  ),
-                  TableRow(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "Day 8",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 20.0),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("Percentage",
-                            textAlign: TextAlign.center,
-                            //trim the axis value to 2 digit after decimal point
-                            style: TextStyle(fontSize: 20.0)),
-                      )
-                    ],
-                  ),
-                  TableRow(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "Day 7",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 20.0),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("Percentage",
-                            textAlign: TextAlign.center,
-                            //trim the axis value to 2 digit after decimal point
-                            style: TextStyle(fontSize: 20.0)),
-                      )
-                    ],
-                  ),
-                  TableRow(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "Day 6",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 20.0),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("Percentage",
-                            textAlign: TextAlign.center,
-                            //trim the axis value to 2 digit after decimal point
-                            style: TextStyle(fontSize: 20.0)),
-                      )
-                    ],
-                  ),
-                  TableRow(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "Day 5",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 20.0),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("Percentage",
-                            textAlign: TextAlign.center,
-                            //trim the axis value to 2 digit after decimal point
-                            style: TextStyle(fontSize: 20.0)),
-                      )
-                    ],
-                  ),
-                  TableRow(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "Day 4",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 20.0),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("Percentage",
-                            textAlign: TextAlign.center,
-                            //trim the axis value to 2 digit after decimal point
-                            style: TextStyle(fontSize: 20.0)),
-                      )
-                    ],
-                  ),
-                  TableRow(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "Day 3",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 20.0),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("Percentage",
-                            textAlign: TextAlign.center,
-                            //trim the axis value to 2 digit after decimal point
-                            style: TextStyle(fontSize: 20.0)),
-                      )
-                    ],
-                  ),
-                  TableRow(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "Day 2",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 20.0),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("Percentage",
-                            textAlign: TextAlign.center,
-                            //trim the axis value to 2 digit after decimal point
-                            style: TextStyle(fontSize: 20.0)),
-                      )
-                    ],
-                  ),
-                  TableRow(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "Day 1",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 20.0),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("Percentage",
-                            textAlign: TextAlign.center,
-                            //trim the axis value to 2 digit after decimal point
-                            style: TextStyle(fontSize: 20.0)),
-                      )
-                    ],
+                  Text(
+                    'Percentage',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 30,
+                      color: Colors.lightGreen,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
-              Expanded(
-                child: Column(
-                  children: [
-                    //TODO: remove this button after finalizing project
-                    ElevatedButton(
-                      child: Text('View Charging Status'),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ChargingStatus()),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.deepPurple,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 70, vertical: 20),
-                        textStyle: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
+              SizedBox(height: 10),
+              StreamBuilder<QuerySnapshot>(
+                stream: _historyStream,
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return Text('Something went wrong');
+                  }
+
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text("Loading");
+                  }
+
+                  return new Table(
+                    border: TableBorder.all(
+                      width: 2.0,
+                      color: Colors.pink,
+                      style: BorderStyle.solid,
                     ),
-                  ],
-                ),
+                    children:
+                        snapshot.data!.docs.map((DocumentSnapshot document) {
+                      Map<String, dynamic> data =
+                          document.data() as Map<String, dynamic>;
+                      return TableRow(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              " ${data['date'].toDate().toString()}",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 20.0),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(" ${data['percentage']}",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 20.0)),
+                          )
+                        ],
+                      );
+                    }).toList(),
+                  );
+                },
               ),
             ],
           ),
