@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:battery/battery.dart';
 import 'package:battery_manager/classes/BatteryNotificationLvl.dart';
+import 'package:battery_manager/classes/HistoryData.dart';
 import 'package:battery_manager/constants/constants.dart';
 import 'package:battery_manager/screens/history.dart';
 import 'package:battery_manager/services/auth.dart';
@@ -37,6 +38,7 @@ class _BatteryUIState extends State<BatteryUI> {
   late User user;
   late String uid;
   TextEditingController lvlController = TextEditingController();
+  final DateTime currentDate = DateTime.now();
 
   Future<void> readNotification() async {
     try {
@@ -64,6 +66,7 @@ class _BatteryUIState extends State<BatteryUI> {
       print(err);
       throw err;
     }
+
   }
 
   @override
@@ -72,14 +75,16 @@ class _BatteryUIState extends State<BatteryUI> {
     uid = user.uid;
     readNotification();
 
+
+
     _batteryStateSubscription =
         _battery.onBatteryStateChanged.listen((BatteryState state) {
       print('listening to the battery stream');
       if (state == BatteryState.charging) {
         if (batteryCharging == false) {
-          // methanin batteryCharging kiyana eka false kiyanne me aluth state ekata kalin charge ekata gahala nathuwa thibila thiyanne
-          // E kiyanne dan me charge ekata gahuwa gaman listner eken update eka awe. Me welawe thiyana chargelevel eke level kiyana variable eken ganna puluwan
-          // eka aran date ekayi username ekayi ekka history ekata danna.
+          //add history
+          addHistory();
+
           print("update previously charged level here ${level}");
         }
         setState(() {
@@ -308,5 +313,17 @@ class _BatteryUIState extends State<BatteryUI> {
         ),
       ),
     );
+  }
+  Future<void> addHistory() {
+    CollectionReference history = firestore.collection('history');
+    return history
+        .add({
+      'userId': uid,
+      'percentage': level,
+      'date': currentDate,
+    })
+    // .then((value) => readHistory())
+        .catchError((error) =>
+        print("Failed to add history: $error"));
   }
 }
